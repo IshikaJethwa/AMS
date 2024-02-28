@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="User Profile">
+    <meta name="author" content="Your Name">
+    <title>User Profile</title>
+
+    <!-- Fontfaces CSS -->
+    <link href="../css/font-face.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS -->
+    <link href="../vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Vendor CSS -->
+    <link href="../vendor/animsition/animsition.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS -->
+    <link href="../css/theme.css" rel="stylesheet" media="all">
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+
+<body class="animsition">
+    <div class="page-wrapper">
+
+        <!-- Include the sidebar and header -->
+        <div id="sidebar-container"></div>
+        <div id="header-container"></div>
+
+        <!-- PAGE CONTAINER-->
+        <div class="page-container">
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <strong>User Profile</strong>
+                                    </div>
+                                    <div class="card-body card-block">
+                                        <!-- User Profile Content -->
+                                        <div id="user-profile">
+                                            <!-- Display user details fetched from the server -->
+                                            <table class="table table-bordered mg-b-0">
+                                                <tr>
+                                                    <th>User ID</th>
+                                                    <td id="user-id"><!-- Display user ID fetched from the server -->
+                                                    </td>
+                                                </tr>
+                                               
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <td id="user-name">
+                                                        <!-- Display user name fetched from the server -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Email</th>
+                                                    <td id="user-email">
+                                                        <!-- Display user email fetched from the server -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Mobile Number</th>
+                                                    <td id="user-mobile">
+                                                        <!-- Display user mobile number fetched from the server -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <td id="user-username">
+                                                        <!-- Display username fetched from the server -->
+                                                    </td>
+                                                </tr>
+                                                <!-- Add more rows for additional details -->
+                                            </table>
+
+                                            <!-- Update Button -->
+                                            <p style="text-align: center;" class="mt-2">
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                    data-target="#updateModal">
+                                                    Update Profile
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END MAIN CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Update Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for updating user profile -->
+                    <form id="updateForm">
+                        <!-- User ID -->
+                        <div class="form-group">
+                            <label for="updateAdmin_Id">Admin_Id:</label>
+                            <input type="text" class="form-control" id="updateAdmin_Id" readonly>
+                        </div>
+                       
+                        <!-- Name -->
+                        <div class="form-group">
+                            <label for="updateName">Name:</label>
+                            <input type="text" class="form-control" id="updateName" placeholder="Enter your name">
+                        </div>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="updateEmail">Email:</label>
+                            <input type="email" class="form-control" id="updateEmail" placeholder="Enter your email">
+                        </div>
+                        <!-- Mobile Number -->
+                        <div class="form-group">
+                            <label for="updatePhoneNo">Mobile Number:</label>
+                            <input type="text" class="form-control" id="updatePhoneNo"
+                                placeholder="Enter your mobile number">
+                        </div>
+                        <!-- Username -->
+                        <div class="form-group">
+                            <label for="updateUsername">Username:</label>
+                            <input type="text" class="form-control" id="updateUsername" readonly>
+                        </div>
+                        <!-- Add more input fields as needed -->
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateUserProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS -->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
+    <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
+    <!-- Vendor JS -->
+    <script src="../vendor/animsition/animsition.min.js"></script>
+    <script src="../vendor/select2/select2.min.js"></script>
+    <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <!-- Main JS -->
+    <script src="../js/main.js"></script>
+
+    <!-- Fetch and include sidebar content using JavaScript -->
+    <script>
+        fetch('../includes/sidebarAdmin.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('sidebar-container').innerHTML = data);
+    </script>
+
+    <!-- Fetch and include header content using JavaScript -->
+    <script>
+        fetch('../includes/header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                var menu = $('.js-item-menu');
+                var sub_menu_is_showed = -1;
+
+                for (var i = 0; i < menu.length; i++) {
+                    $(menu[i]).on('click', function (e) {
+                        e.preventDefault();
+                        $('.js-right-sidebar').removeClass("show-sidebar");
+                        if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
+                            $(this).toggleClass('show-dropdown');
+                            sub_menu_is_showed = -1;
+                        }
+                        else {
+                            for (var i = 0; i < menu.length; i++) {
+                                $(menu[i]).removeClass("show-dropdown");
+                            }
+                            $(this).toggleClass('show-dropdown');
+                            sub_menu_is_showed = jQuery.inArray(this, menu);
+                        }
+                    });
+                }
+                $(".js-item-menu, .js-dropdown").click(function (event) {
+                    event.stopPropagation();
+                });
+
+                var userDataString = sessionStorage.getItem('user');
+
+
+                // Step 2: Parse the JSON string to get the user data as an object
+                var userData = userDataString ? JSON.parse(userDataString) : null;
+
+                // Step 3: Update the content of the header dynamically if userData is not null
+                if (userData) {
+
+                    document.getElementById('adminNameLink').textContent = userData.username;
+                    document.getElementById('adminNameDropdown').textContent = userData.username;
+                } else {
+                    console.error('User data is missing or invalid.');
+                }
+            });
+    </script>
+
+    <!-- Fetch and display user details using JavaScript (you need to implement this part) -->
+    <script>
+        // Use AJAX or fetch to get user details from the server and update the HTML elements
+        // Example:
+        var userid;
+        const userDataString = sessionStorage.getItem('user');
+
+        // Check if user data exists
+        if (userDataString) {
+            // Parse the JSON string to get the user data as an object
+            const userData = JSON.parse(userDataString);
+
+            // Send a POST request to the server to get user details
+            $.ajax({
+                url: 'http://localhost:62416/api/getUser',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    role: userData.role,
+                    username: userData.username,
+                    password: userData.password
+                }),
+                success: function (user) {
+                     userid = user.Admin_Id;
+                    // Update the HTML elements with user details
+                    $('#user-id').text(user.Admin_Id);
+                   
+                    $('#user-name').text(user.Name);
+                    $('#user-email').text(user.Email);
+                    $('#user-mobile').text(user.PhoneNo);
+                    $('#user-username').text(user.Username);
+
+                    $('#updateAdmin_Id').val(user.Admin_Id);
+                    
+                    $('#updateName').val(user.Name);
+                    $('#updateEmail').val(user.Email);
+                    $('#updatePhoneNo').val(user.PhoneNo);
+                    $('#updateUsername').val(user.Username);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        } else {
+            console.error('User data is missing or invalid.');
+        }
+    </script>
+    
+
+    <!-- Update User Profile Logic -->
+    <script>
+        // Function to update user profile
+        function updateUserProfile() {
+                // Get the updated user details from the form
+                const updatedName = $('#updateName').val();
+                const updatedEmail = $('#updateEmail').val();
+                const updatedMobile = $('#updatePhoneNo').val();
+
+                // Prepare the updated user object
+                const updatedUser = {
+                    Admin_Id: userid,
+                    Name: updatedName,
+                    Email: updatedEmail,
+                    PhoneNo: updatedMobile
+                    // Add more properties as needed
+                };
+
+                // Send a PUT request to update the user profile
+                $.ajax({
+                    url: `http://localhost:62416/api/SuperAdmin/Admin/${userid}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updatedUser),
+                    success: function (response) {
+                        // Handle success
+                        alert('Profile updated successfully:', response);
+
+                        // Update sessionStorage with the new user details
+                        const userDataString = sessionStorage.getItem('user');
+                        if (userDataString) {
+                            const userData = JSON.parse(userDataString);
+                            userData.Name = updatedName;
+                            userData.Email = updatedEmail;
+                            userData.MobileNo = updatedMobile;
+                            sessionStorage.setItem('user', JSON.stringify(userData));
+                        }
+
+                        // Redirect to the desired page
+                        window.location.href = 'profile.html';
+
+                        // Close the modal
+                        $('#updateModal').modal('hide');
+                    },
+                    error: function (error) {
+                        alert('Error:', error);
+                    }
+                });
+            }
+
+        // Add an event listener to the modal to execute a function when it is shown
+        $(document).ready(function () {
+            $('#updateModal').on('show.bs.modal', function (event) {
+                // Fetch the user details and populate the form fields
+                const userDataString = sessionStorage.getItem('user');
+
+                if (!userDataString) {
+                    console.error('User data is missing or invalid.');
+                    return;
+                }
+
+                // Parse the JSON string to get the user data as an object
+                const userData = JSON.parse(userDataString);
+                const userId = userData ? userData.UserID_id : null;
+
+                if (!userId) {
+                    console.error('User ID is missing or invalid.');
+                    return;
+                }
+
+                // Fetch user details using AJAX or fetch
+                $.ajax({
+                    url: 'http://localhost:62416/api/SuperAdmin/Admin/' + userId,
+                    type: 'GET',
+                    success: function (user) {
+                        // Populate the form fields with the user details
+                        $('#updateUserId').val(user.UserID_id);
+                        $('#updateUnitId').val(user.UnitID);
+                        $('#updateName').val(user.Name);
+                        $('#updateEmail').val(user.Email);
+                        $('#updateMobile').val(user.MobileNo);
+                        $('#updateUsername').val(user.User_username);
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Meeting Details</title>
+
+    <!-- Fontfaces CSS-->
+    <link href="../css/font-face.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link href="../vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- ../vendor CSS-->
+    <link href="../vendor/animsition/animsition.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/wow/animate.css" rel="stylesheet" media="all">
+    <link href="../vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/slick/slick.css" rel="stylesheet" media="all">
+    <link href="../vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="../css/theme.css" rel="stylesheet" media="all">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // Dummy meeting data for illustration purposes
+        let meetingData = [];
+        let currentId = 0;
+        function fetchMeetingDataAndDisplay(filter) {
+            // Make an AJAX call to your API endpoint
+            fetch('http://localhost:62416/api/Admin/GetMeeting')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Replace the dummy meeting data with the fetched data
+                    meetingData = data;
+
+                    // Display meetings based on the filter
+                    displayMeetings(filter);
+                })
+                .catch(error => console.error('Error fetching meeting data:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch and include sidebar content
+            fetch('../includes/sidebarAdmin.html')
+                .then(response => response.text())
+                .then(data => document.getElementById('sidebar-container').innerHTML = data);
+
+            // Fetch and include header content
+            fetch('../includes/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    var menu = $('.js-item-menu');
+                    var sub_menu_is_showed = -1;
+
+                    for (var i = 0; i < menu.length; i++) {
+                        $(menu[i]).on('click', function (e) {
+                            e.preventDefault();
+                            $('.js-right-sidebar').removeClass("show-sidebar");
+                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = -1;
+                            }
+                            else {
+                                for (var i = 0; i < menu.length; i++) {
+                                    $(menu[i]).removeClass("show-dropdown");
+                                }
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = jQuery.inArray(this, menu);
+                            }
+                        });
+                    }
+                    $(".js-item-menu, .js-dropdown").click(function (event) {
+                        event.stopPropagation();
+                    });
+
+                    var userDataString = sessionStorage.getItem('user');
+
+
+                    // Step 2: Parse the JSON string to get the user data as an object
+                    var userData = userDataString ? JSON.parse(userDataString) : null;
+
+                    // Step 3: Update the content of the header dynamically if userData is not null
+                    if (userData) {
+
+                        document.getElementById('adminNameLink').textContent = userData.username;
+                        document.getElementById('adminNameDropdown').textContent = userData.username;
+                    } else {
+                        console.error('User data is missing or invalid.');
+                    }
+                });
+
+            // Display all meetings by default
+            fetchMeetingDataAndDisplay('upcoming');
+
+            // Button click event for upcoming meetings
+            document.getElementById('btnUpcoming').addEventListener('click', function () {
+                // Fetch meeting data only if not already fetched
+                if (!meetingData || meetingData.length === 0) {
+                    fetchMeetingDataAndDisplay('upcoming');
+                } else {
+                    displayMeetings('upcoming');
+                }
+            });
+
+            // Button click event for past meetings
+            document.getElementById('btnPast').addEventListener('click', function () {
+                // Fetch meeting data only if not already fetched
+                if (!meetingData || meetingData.length === 0) {
+                    fetchMeetingDataAndDisplay('past');
+                } else {
+                    displayMeetings('past');
+                }
+            });
+
+            // Add Meeting button click event
+            document.getElementById('btnAddMeeting').addEventListener('click', function () {
+                openAddMeetingModal();
+            });
+
+            // Download Report button click event
+            document.getElementById('btnDownloadReport').addEventListener('click', function () {
+                downloadMeetingReport();
+            });
+        });
+
+        // Placeholder functions for edit and delete actions
+        function saveEdit() {
+            // Get the edited values from the form
+            const editedTitle = document.getElementById('editTitle').value;
+            const editedDescription = document.getElementById('editDescription').value;
+            const editedDatetime = document.getElementById('editDatetime').value;
+
+            // Create an object with the edited data
+            const editedMeetingData = {
+                Title: editedTitle,
+                Description: editedDescription,
+                DateTime: editedDatetime
+            };
+
+            // Make an AJAX call to update the meeting data
+            $.ajax({
+                url: `http://localhost:62416/api/Admin/UpdateMeeting/${currentId}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(editedMeetingData),
+                success: function (data) {
+                    // Handle the response from the server (if needed)
+                    alert('Meeting updated successfully:', data);
+                    window.location.href = 'meeting.html';
+
+                    // You can perform additional actions based on the response
+
+                    // Hide the modal after handling the action
+                    $('#editMeetingModal').modal('hide');
+
+                    // Optionally, refresh the meeting data on the page
+                    fetchMeetingDataAndDisplay('upcoming');
+                },
+                error: function (error) {
+                    alert('Error updating meeting:', error);
+                }
+            });
+        }
+
+        function confirmDelete() {
+            // Make an AJAX call to delete the meeting by its ID
+            $.ajax({
+                url: `http://localhost:62416/api/Admin/CancelMeeting/${currentId}`,
+                method: 'DELETE',
+                success: function (data) {
+                    // Handle the response from the server (if needed)
+                    alert('Meeting deleted successfully:', data);
+
+                    // You can perform additional actions based on the response
+
+                    // Hide the modal after handling the action
+                    $('#deleteMeetingModal').modal('hide');
+                    window.location.href = 'meeting.html';
+
+                    // Optionally, refresh the meeting data on the page
+                    fetchMeetingDataAndDisplay('upcoming');
+                },
+                error: function (error) {
+                    alert('Error deleting meeting:', error);
+                }
+            });
+        }
+
+        function displayMeetings(filter) {
+            const tableBody = document.getElementById('meeting-table-body');
+            const tableHeaders = document.getElementById('meeting-table-headers');
+            const actionHeader = document.getElementById('action-header');
+
+            // Clear existing table content
+            tableBody.innerHTML = '';
+
+            meetingData.forEach(meeting => {
+                const row = document.createElement('tr');
+
+                const meetingDate = new Date(meeting.DateTime);
+                const currentDate = new Date();
+
+                const actionCell = generateActionCell(filter, meetingDate, meeting.MeetingId);
+
+                if ((filter === 'upcoming' && meetingDate > currentDate) ||
+                    (filter === 'past' && meetingDate <= currentDate)) {
+                    // Include "Action" column only for upcoming or past meetings
+                    row.innerHTML = `
+                        <td>${meeting.MeetingId}</td>
+                        <td>${meeting.Title}</td>
+                        <td>${meeting.Description}</td>
+                        <td>${meeting.DateTime}</td>
+                    `;
+                    if (actionCell) {
+                        row.appendChild(actionCell);
+                    }
+                }
+
+                tableBody.appendChild(row);
+            });
+
+            // Hide or show the "Action" column header based on the filter
+            actionHeader.innerHTML = filter === 'past' ? '' : 'Action';
+        }
+
+        function generateActionCell(filter, meetingDate, meetingId) {
+            const currentDate = new Date();
+            const td = document.createElement('td');
+
+            if (filter !== 'past' && meetingDate > currentDate) {
+                // Edit button
+                const editButton = document.createElement('button');
+                editButton.classList.add('btn', 'mr-2');
+                editButton.setAttribute('data-toggle', 'modal');
+                editButton.setAttribute('data-target', '#editMeetingModal');
+                editButton.innerHTML = '<i class="fa fa-edit"></i>';
+                // Set the onclick function to fetch meeting details and open the modal
+                editButton.onclick = function () {
+                    getMeetingById(meetingId);
+                };
+
+                td.appendChild(editButton);
+
+            }
+
+            return td;
+        }
+
+        function openAddMeetingModal() {
+            // Redirect to AddMeeting.html or implement modal logic
+            window.location.href = 'add-meeting.html';
+        }
+
+        function downloadMeetingReport() {
+            // Implement logic for downloading expense report
+            alert('Downloading Expense Report');
+            // You can redirect to a report generation endpoint or trigger a download
+            // For illustration, an alert is shown here
+        }
+
+        function getMeetingById(meetingId) {
+            // Make an AJAX call to retrieve the details of the meeting by its ID
+            $.ajax({
+                url: `http://localhost:62416/api/Admin/GetMeetingID/${meetingId}`,
+                method: 'GET',
+                success: function (data) {
+                    // Handle the response from the server
+                    // Update the form in the modal with the retrieved meeting details
+                    currentId = meetingId;
+                    $('#editTitle').val(data.Title);
+                    $('#editDescription').val(data.Description);
+                    $('#editDatetime').val(data.DateTime);
+
+                    // Display the modal
+                    $('#editMeetingModal').modal('show');
+                },
+                error: function (error) {
+                    alert('Error fetching meeting details:', error);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body class="animsition">
+    <div class="page-wrapper">
+        <!-- HEADER MOBILE-->
+        <div id="sidebar-container"></div>
+        <!-- END HEADER MOBILE-->
+
+        <!-- MENU SIDEBAR-->
+        <!-- Include your menu sidebar content here -->
+        <!-- END MENU SIDEBAR-->
+
+        <!-- PAGE CONTAINER-->
+        <div class="page-container">
+            <!-- HEADER DESKTOP-->
+            <div id="header-container"></div>
+            <!-- END HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-2">
+                                    <button class="btn btn-primary" id="btnAddMeeting">
+                                        <i class="bi bi-plus"></i>Add Meeting</button>
+                                    <div class="float-right">
+                                        <button class="btn btn-success" id="btnDownloadReport">
+                                            <i class="fa fa-download"></i> Download Report
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <button id="btnUpcoming" class="btn btn-info mr-2">Upcoming Meetings</button>
+                                    <button id="btnPast" class="btn btn-secondary">Past Meetings</button>
+                                </div>
+                                <div class="table-responsive table--no-card m-b-30">
+                                    <table class="table table-borderless table-striped table-earning">
+                                        <thead id="meeting-table-headers">
+                                            <tr>
+                                                <th>Meeting ID</th>
+                                                <th>Title</th>
+                                                <th>Description</th>
+                                                <th>Date and Time</th>
+                                                <th id="action-header">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="meeting-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Meeting Modal -->
+    <div class="modal fade" id="editMeetingModal" tabindex="-1" role="dialog" aria-labelledby="editMeetingModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMeetingModalLabel">Edit Meeting</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMeetingForm">
+                        <div class="form-group">
+                            <label for="editTitle">Title</label>
+                            <input type="text" id="editTitle" name="editTitle" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDescription">Description</label>
+                            <textarea id="editDescription" name="editDescription" class="form-control"
+                                required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDatetime">Date and Time</label>
+                            <input type="datetime-local" id="editDatetime" name="editDatetime" class="form-control"
+                                required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEdit()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Meeting Modal -->
+    <div class="modal fade" id="deleteMeetingModal" tabindex="-1" role="dialog"
+        aria-labelledby="deleteMeetingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteMeetingModalLabel">Delete Meeting</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this meeting?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS-->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS-->
+    <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
+    <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
+    <!-- ../vendor JS -->
+    <script src="../vendor/slick/slick.min.js"></script>
+    <script src="../vendor/wow/wow.min.js"></script>
+    <script src="../vendor/animsition/animsition.min.js"></script>
+    <script src="../vendor/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <script src="../vendor/counter-up/jquery.waypoints.min.js"></script>
+    <script src="../vendor/counter-up/jquery.counterup.min.js"></script>
+    <script src="../vendor/circle-progress/circle-progress.min.js"></script>
+    <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
+    <script src="../vendor/select2/select2.min.js"></script>
+
+    <!-- Main JS-->
+    <script src="../js/main.js"></script>
+</body>
+
+</html>

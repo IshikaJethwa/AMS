@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Booking Details</title>
+
+    <!-- Fontfaces CSS-->
+    <link href="../css/font-face.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link href="../vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- ../vendor CSS-->
+    <link href="../vendor/animsition/animsition.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/wow/animate.css" rel="stylesheet" media="all">
+    <link href="../vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/slick/slick.css" rel="stylesheet" media="all">
+    <link href="../vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="../css/theme.css" rel="stylesheet" media="all">
+    <!-- Include external HTML files using JavaScript -->
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch and include sidebar content
+            fetch('../includes/sidebarUser.html')
+                .then(response => response.text())
+                .then(data => document.getElementById('sidebar-container').innerHTML = data);
+
+            // Fetch and include header content
+            fetch('../includes/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    var menu = $('.js-item-menu');
+                    var sub_menu_is_showed = -1;
+
+                    for (var i = 0; i < menu.length; i++) {
+                        $(menu[i]).on('click', function (e) {
+                            e.preventDefault();
+                            $('.js-right-sidebar').removeClass("show-sidebar");
+                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = -1;
+                            }
+                            else {
+                                for (var i = 0; i < menu.length; i++) {
+                                    $(menu[i]).removeClass("show-dropdown");
+                                }
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = jQuery.inArray(this, menu);
+                            }
+                        });
+                    }
+                    $(".js-item-menu, .js-dropdown").click(function (event) {
+                        event.stopPropagation();
+                    });
+
+                    var userDataString = sessionStorage.getItem('user');
+
+
+                    // Step 2: Parse the JSON string to get the user data as an object
+                    var userData = userDataString ? JSON.parse(userDataString) : null;
+
+                    // Step 3: Update the content of the header dynamically if userData is not null
+                    if (userData) {
+
+                        document.getElementById('adminNameLink').textContent = userData.username;
+                        document.getElementById('adminNameDropdown').textContent = userData.username;
+                    } else {
+                        console.error('User data is missing or invalid.');
+                    }
+                });
+
+            $.ajax({
+                url: 'http://localhost:62416/api/User/GetAllBooking',
+                type: 'GET',
+                dataType: 'json',
+                success: function (bookings) {
+                    // Clear existing table rows
+                    $('#booking-table-body').empty();
+                    console.log(bookings);
+                    const filteredbookings = bookings.filter(booking => booking.User_ID == sessionStorage.getItem('userid'));
+                    console.log(filteredbookings);
+                    // Iterate through the fetched bookings and update the table
+                    filteredbookings.forEach(booking => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${booking.BookingID}</td>
+                    <td>${booking.User_ID}</td>
+                    <td>${booking.PropertyName}</td>
+                    <td>${booking.Purpose}</td> 
+                    <td>${booking.Amount}</td> 
+                    <td>${booking.StartTime}</td>
+                    <td>${booking.EndTime}</td>
+                    <td>
+                            <button class="btn btn-link" title="View Full Details" onclick="openUpdateModal(${booking.BookingID})">
+                                <i class="fa fa-edit fa-1x"></i>
+                            </button>
+                        </td>
+                `;
+                        $('#booking-table-body').append(row);
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching booking data:', error);
+                }
+            });
+
+
+        });
+       
+        function openUpdateModal(id) {
+                // Fetch booking details for the specific BookingID
+                $.ajax({
+                    url: `http://localhost:62416/api/User/GetBookingDetails/${id}`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (booking) {
+                        // Populate modal fields with the retrieved data
+                        $('#updatePropertyName').val(booking.PropertyName);
+                        $('#updateStartTime').val(booking.StartTime);
+                        $('#updateEndTime').val(booking.EndTime);
+                        $('#updatePurpose').val(booking.Purpose);
+                        $('#updateAmount').val(booking.Amount);
+
+                        // Show the modal
+                        $('#updateBookingModal').modal('show');
+                    },
+                    error: function (error) {
+                        console.error('Error fetching booking details:', error);
+                    }
+                });
+            }
+
+    </script>
+</head>
+
+<body class="animsition">
+    <div class="page-wrapper">
+        <!-- HEADER MOBILE-->
+        <div id="sidebar-container"></div>
+        <!-- END HEADER MOBILE-->
+
+        <!-- MENU SIDEBAR-->
+        <!-- Include your menu sidebar content here -->
+        <!-- END MENU SIDEBAR-->
+
+        <!-- PAGE CONTAINER-->
+        <div class="page-container">
+            <!-- HEADER DESKTOP-->
+            <div id="header-container"></div>
+            <!-- END HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <div class="table-responsive table--no-card m-b-30">
+                                    <table class="table table-borderless table-striped table-earning">
+                                        <thead>
+                                            <tr>
+                                                <th>Booking ID</th>
+                                                <th>User ID</th>
+                                                <th>Property Name</th>
+                                                <th>Purpose</th>
+                                                <th>Amount</th>
+                                                <th>Start Time</th>
+                                                <th>End Time</th>
+                                                <th>Action</th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody id="booking-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="updateBookingModal" tabindex="-1" aria-labelledby="updateBookingModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateBookingModalLabel">Update Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input fields for updating booking details -->
+                <div class="mb-3">
+                    <label for="updatePropertyName" class="form-label">Property Name</label>
+                    <input type="text" class="form-control" id="updatePropertyName">
+                </div>
+                <div class="mb-3">
+                    <label for="updateStartTime" class="form-label">Start Time</label>
+                    <input type="datetime-local" class="form-control" id="updateStartTime">
+                </div>
+                <div class="mb-3">
+                    <label for="updateEndTime" class="form-label">End Time</label>
+                    <input type="datetime-local" class="form-control" id="updateEndTime">
+                </div>
+                <div class="mb-3">
+                    <label for="updatePurpose" class="form-label">Purpose</label>
+                    <input type="text" class="form-control" id="updatePurpose">
+                </div>
+                <div class="mb-3">
+                    <label for="updateAmount" class="form-label">Amount</label>
+                    <input type="number" class="form-control" id="updateAmount">
+                </div>
+                <!-- Add other fields as needed -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateBooking()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Jquery JS-->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS-->
+    <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
+    <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
+    <!-- ../vendor JS -->
+    <script src="../vendor/slick/slick.min.js"></script>
+    <script src="../vendor/wow/wow.min.js"></script>
+    <script src="../vendor/animsition/animsition.min.js"></script>
+    <script src="../vendor/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <script src="../vendor/counter-up/jquery.waypoints.min.js"></script>
+    <script src="../vendor/counter-up/jquery.counterup.min.js"></script>
+    <script src="../vendor/circle-progress/circle-progress.min.js"></script>
+    <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
+    <script src="../vendor/select2/select2.min.js"></script>
+
+    <!-- Main JS-->
+    <script src="../js/main.js"></script>
+
+</body>
+
+</html>

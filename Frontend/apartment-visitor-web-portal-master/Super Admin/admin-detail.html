@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Admin Details</title>
+
+    <!-- Fontfaces CSS-->
+    <link href="../css/font-face.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link href="../vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- ../vendor CSS-->
+    <link href="../vendor/animsition/animsition.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/wow/animate.css" rel="stylesheet" media="all">
+    <link href="../vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/slick/slick.css" rel="stylesheet" media="all">
+    <link href="../vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="../vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="../css/theme.css" rel="stylesheet" media="all">
+
+    <!-- Include external HTML files using JavaScript -->
+    <script>
+        // Fetch and include sidebar content
+        fetch('../includes/sidebarSuperAdmin.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('sidebar-container').innerHTML = data);
+
+        // Fetch and include header content
+        fetch('../includes/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    var menu = $('.js-item-menu');
+                    var sub_menu_is_showed = -1;
+
+                    for (var i = 0; i < menu.length; i++) {
+                        $(menu[i]).on('click', function (e) {
+                            e.preventDefault();
+                            $('.js-right-sidebar').removeClass("show-sidebar");
+                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = -1;
+                            }
+                            else {
+                                for (var i = 0; i < menu.length; i++) {
+                                    $(menu[i]).removeClass("show-dropdown");
+                                }
+                                $(this).toggleClass('show-dropdown');
+                                sub_menu_is_showed = jQuery.inArray(this, menu);
+                            }
+                        });
+                    }
+                    $(".js-item-menu, .js-dropdown").click(function (event) {
+                        event.stopPropagation();
+                    });
+
+
+
+                    var userDataString = sessionStorage.getItem('user');
+
+
+                    // Step 2: Parse the JSON string to get the user data as an object
+                    var userData = userDataString ? JSON.parse(userDataString) : null;
+
+                    // Step 3: Update the content of the header dynamically if userData is not null
+                    if (userData) {
+                        console.log('Parsed user data:', userData);
+                        document.getElementById('adminNameLink').textContent = userData.username;
+                        document.getElementById('adminNameDropdown').textContent = userData.username;
+                    } else {
+                        console.error('User data is missing or invalid.');
+                    }
+                });
+    </script>
+</head>
+
+<body class="animsition">
+    <!-- Update Admin Modal -->
+    <div class="modal fade" id="updateAdminModal" tabindex="-1" role="dialog" aria-labelledby="updateAdminModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateAdminModalLabel">Update Admin Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for updating admin details -->
+                    <form id="updateAdminForm">
+                        <div class="form-group">
+                            <label for="update-admin-id">Admin ID</label>
+                            <input type="text" class="form-control" id="update-admin-id" name="update-admin-id"
+                                readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-admin-name">Name</label>
+                            <input type="text" class="form-control" id="update-admin-name" name="update-admin-name"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-admin-email">Email</label>
+                            <input type="email" class="form-control" id="update-admin-email" name="update-admin-email"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-admin-phone">Phone No</label>
+                            <input type="tel" class="form-control" id="update-admin-phone" name="update-admin-phone"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-admin-username">Username</label>
+                            <input type="text" class="form-control" id="update-admin-username"
+                                name="update-admin-username" required>
+                        </div>
+                        <!-- Add more input fields as needed -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateAdmin()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Admin Modal -->
+    <div class="modal fade" id="deleteAdminModal" tabindex="-1" role="dialog" aria-labelledby="deleteAdminModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAdminModalLabel">Delete Admin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this admin?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteAdmin()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <!-- HEADER MOBILE-->
+        <div id="sidebar-container"></div>
+        <!-- END HEADER MOBILE-->
+
+        <!-- MENU SIDEBAR-->
+        <!-- Include your menu sidebar content here -->
+        <!-- END MENU SIDEBAR-->
+
+        <!-- PAGE CONTAINER-->
+        <div class="page-container">
+            <!-- HEADER DESKTOP-->
+            <div id="header-container"></div>
+            <!-- END HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <strong>Admin</strong> Details
+                                    </div>
+                                    <div class="card-body card-block">
+
+                                        <p style="font-size:16px; color:red" align="center">
+                                            <!-- Display any relevant messages here -->
+                                        </p>
+
+                                        <!-- PHP code for fetching admin details will be inserted here -->
+
+                                        <div id="admin-details">
+                                            <table border="1" class="table table-bordered mg-b-0">
+                                                <tr>
+                                                    <th>Admin ID</th>
+                                                    <td id="admin-id"><!-- Display admin ID fetched from AJAX --></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <td id="admin-name"><!-- Display admin name fetched from AJAX -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Email</th>
+                                                    <td id="admin-email"><!-- Display admin email fetched from AJAX -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Phone Number</th>
+                                                    <td id="admin-phone">
+                                                        <!-- Display admin phone number fetched from AJAX -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <td id="admin-username">
+                                                        <!-- Display admin username fetched from AJAX -->
+                                                    </td>
+                                                </tr>
+                                                <!-- Add more rows for additional details -->
+                                            </table>
+                                            <!-- Update and Delete Buttons -->
+                                            <div class="mt-3">
+                                                <button class="btn btn-primary"
+                                                    onclick="openUpdateAdminModal()">Update</button>
+                                                <button class="btn btn-danger"
+                                                    onclick="openDeleteAdminModal()">Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Include the footer if needed -->
+    <!-- Jquery JS-->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS-->
+    <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
+    <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
+    <!-- ../vendor JS -->
+    <script src="../vendor/slick/slick.min.js"></script>
+    <script src="../vendor/wow/wow.min.js"></script>
+    <script src="../vendor/animsition/animsition.min.js"></script>
+    <script src="../vendor/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <script src="../vendor/counter-up/jquery.waypoints.min.js"></script>
+    <script src="../vendor/counter-up/jquery.counterup.min.js"></script>
+    <script src="../vendor/circle-progress/circle-progress.min.js"></script>
+    <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
+    <script src="../vendor/select2/select2.min.js"></script>
+
+    <!-- Main JS-->
+    <script src="../js/main.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Extract Admin_Id from the URL
+            var adminId = new URLSearchParams(window.location.search).get('id');
+
+            // AJAX call to fetch specific admin details
+            $.ajax({
+                url: 'http://localhost:62416/api/SuperAdmin/Admin/' + adminId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (admin) {
+                    // Populate the admin details on the page
+                    $('#admin-id').text(admin.Admin_Id);
+                    $('#admin-name').text(admin.Name);
+                    $('#admin-email').text(admin.Email);
+                    $('#admin-phone').text(admin.PhoneNo);
+                    $('#admin-username').text(admin.Username);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+
+        // Function to open the Update Admin modal
+        function openUpdateAdminModal() {
+            $('#updateAdminModal').modal('show');
+        }
+
+        // Function to open the Delete Admin modal
+        function openDeleteAdminModal() {
+            $('#deleteAdminModal').modal('show');
+        }
+    </script>
+    <script>
+        function updateAdmin() {
+            // Get the values from the form fields
+            var adminId = $('#update-admin-id').val();
+            var adminName = $('#update-admin-name').val();
+            var adminEmail = $('#update-admin-email').val();
+            var adminPhone = $('#update-admin-phone').val();
+            var adminUsername = $('#update-admin-username').val();
+
+            // Create an object with the updated admin data
+            var updatedAdminData = {
+
+                "Name": adminName,
+                "Email": adminEmail,
+                "PhoneNo": adminPhone,
+                "Username": adminUsername
+                // Add more fields as needed
+            };
+
+            // Perform an AJAX request to update the admin
+            $.ajax({
+                url: 'http://localhost:62416/api/SuperAdmin/Admin?id=' + adminId,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updatedAdminData),
+                success: function (response) {
+                    // Handle success response
+                    alert('Admin updated successfully:', response);
+
+                    // Close the modal after successful update
+                    $('#updateAdminModal').modal('hide');
+                    window.location.href = 'manageAdmin.html'
+                },
+                error: function (error) {
+                    // Handle error response
+                    alert('Error updating admin:', error);
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#updateAdminModal').on('show.bs.modal', function (event) {
+            var adminId = new URLSearchParams(window.location.search).get('id');
+            // AJAX call to fetch specific admin details
+            $.ajax({
+                url: 'http://localhost:62416/api/SuperAdmin/Admin/' + adminId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (admin) {
+
+                    $('#update-admin-id').val(admin.Admin_Id);
+                    $('#update-admin-name').val(admin.Name);
+                    $('#update-admin-email').val(admin.Email);
+                    $('#update-admin-phone').val(admin.PhoneNo);
+                    $('#update-admin-username').val(admin.Username);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+
+
+
+        });
+    </script>
+    <script>
+        function deleteAdmin() {
+            // Get the admin ID from the page
+            var adminId = $('#admin-id').text();
+
+            // Perform an AJAX request to delete the admin
+            $.ajax({
+                url: 'http://localhost:62416/api/SuperAdmin/Admin/' + adminId,
+                type: 'DELETE',
+                success: function (response) {
+                    // Handle success response
+                    alert('Admin deleted successfully:', response);
+
+                    // Redirect or perform any other action after successful deletion
+                    window.location.href = 'manageAdmin.html';
+                },
+                error: function (error) {
+                    // Handle error response
+                    alert('Error deleting admin:', error);
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -67,22 +67,61 @@
                                 role: userType,
                                 password: password
                             };
-
+                            console.log("***");
                             // Convert the object to a JSON string and store it in sessionStorage
                             sessionStorage.setItem('user', JSON.stringify(user));
+                            console.log("***");
+                            var userid;
+                            const userDataString1 = sessionStorage.getItem('user');
+                            console.log(userDataString1);
+                            // Check if user data exists
+                            if (userDataString1) {
+                                // Parse the JSON string to get the user data as an object
+                                const userData = JSON.parse(userDataString1);
 
-                            if (userType == "Superadmin") {
-                                window.location.href = "Super Admin/dashboard.html";
+                                // Send a POST request to the server to get user details
+                                $.ajax({
+                                    url: 'http://localhost:62416/api/getUser',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({
+                                        role: userData.role,
+                                        username: userData.username,
+                                        password: userData.password
+                                    }),
+                                    success: function (user) {
+                                        // userid = user.UserID_id;
+                                        // sessionStorage.setItem('userid', userid);
+
+                                        if (userType == "Superadmin") {
+                                              ID = user.ID;
+                                            sessionStorage.setItem('userid', ID);
+                                            window.location.href = "Super Admin/dashboard.html";
+                                        }
+                                        else if (userType == "Admin") {
+                                              Admin_Id = user.Admin_Id;
+                                            sessionStorage.setItem('userid', Admin_Id);
+                                            window.location.href = "Admin/dashboard.html";
+                                        }
+                                        else if (userType == "User") {
+                                            userid = user.UserID_id;
+                                            sessionStorage.setItem('userid', userid);
+                                            window.location.href = "User/dashboard.html";
+                                        }
+                                        else {
+                                            alert("Invalid");
+                                        }
+
+                                    },
+                                    error: function (error) {
+                                        console.log('Error:', error);
+                                    }
+                                });
+                            } else {
+                                console.error('User data is missing or invalid.');
                             }
-                            else if (userType == "Admin") {
-                                window.location.href = "Admin/dashboard.html";
-                            }
-                            else if (userType == "User") {
-                                window.location.href = "User/dashboard.html";
-                            }
-                            else {
-                                alert("Invalid");
-                            }
+
+                           
                         } else {
                             alert("Invalid Credentials..")
                         }
@@ -97,36 +136,7 @@
                         alert('Invalid login credentials. Please try again.');
                     }
                 });
-                var userid;
-                const userDataString1 = sessionStorage.getItem('user');
 
-                // Check if user data exists
-                if (userDataString1) {
-                    // Parse the JSON string to get the user data as an object
-                    const userData = JSON.parse(userDataString1);
-
-                    // Send a POST request to the server to get user details
-                    $.ajax({
-                        url: 'http://localhost:62416/api/getUser',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            role: userData.role,
-                            username: userData.username,
-                            password: userData.password
-                        }),
-                        success: function (user) {
-                            userid = user.UserID_id;
-                            sessionStorage.setItem('userid', userid);
-
-                        },
-                        error: function (error) {
-                            console.log('Error:', error);
-                        }
-                    });
-                } else {
-                    console.error('User data is missing or invalid.');
-                }
             });
         });
     </script>
@@ -150,20 +160,21 @@
                                 <div class="form-group">
                                     <label>User Name</label>
                                     <input class="au-input au-input--full" id="username" type="text" name="username"
-                                        placeholder="User Name" required="true">
+                                        placeholder="User Name" value="kamal123" required="true">
                                 </div>
                                 <div class="form-group">
                                     <label>Password</label>
                                     <input class="au-input au-input--full" id="password" type="password" name="password"
-                                        placeholder="Password">
+                                        placeholder="Password" value="kamal123">
                                 </div>
                                 <!-- Adding a dropdown for user type -->
                                 <div class="form-group">
                                     <label>User Type</label>
                                     <select class="au-input au-input--full" id="role" style="height: 45px;"
                                         name="usertype" required="true">
-                                        <option value="User">User</option>
                                         <option value="Admin">Admin</option>
+                                        <option value="User">User</option>
+                                       
                                         <option value="Superadmin">SuperAdmin</option>
                                     </select>
                                 </div>

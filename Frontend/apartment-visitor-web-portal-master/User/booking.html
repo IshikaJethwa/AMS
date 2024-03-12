@@ -33,94 +33,13 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-       
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fetch and include sidebar content
-            fetch('../includes/sidebarUser.html')
-                .then(response => response.text())
-                .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-            // Fetch and include header content
-             fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
-
-                 $.ajax({
-                url: 'http://localhost:62416/api/User/GetAllBooking',
-                type: 'GET',
-                dataType: 'json',
-                success: function (bookings) {
-                    // Clear existing table rows
-                    $('#booking-table-body').empty();
-                   
-                    // Iterate through the fetched bookings and update the table
-                    bookings.forEach(booking => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                    <td>${booking.BookingID}</td>
-                    <td>${booking.User_ID}</td>
-                    <td>${booking.PropertyName}</td>
-                    <td>${booking.Purpose}</td>
-                  
-                    <td>${booking.StartTime}</td>
-                    <td>${booking.EndTime}</td>
-                     
-                `;
-                        $('#booking-table-body').append(row);
-                    });
-                },
-                error: function (error) {
-                    console.error('Error fetching booking data:', error);
-                }
-            });
-
-         
-        });
-
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
+        }
     </script>
+    <!-- Include external HTML files using JavaScript -->
+
 </head>
 
 <body class="animsition">
@@ -145,37 +64,66 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="mb-2">
-                                    <button class="btn btn-primary" onclick="window.location.href = 'add-booking.html'">
-                                        <i class="bi bi-plus"></i> Add Booking</button>
-                                        <button class="btn btn-warning" onclick="window.location.href = 'updatebooking.html'">
-                                            <i class="bi bi-pencil"></i> update Booking</button>
-                                   
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center">
+                                    <!-- Update Button on the left -->
+                                    <button class="btn btn-primary mr-2" onclick="window.location.href = 'add-booking.html'">
+                                        <i class="bi bi-plus"></i> Add Booking
+                                    </button>
+                                    <button class="btn btn-warning" onclick="window.location.href = 'updatebooking.html'">
+                                        <i class="bi bi-pencil"></i> Update Booking
+                                    </button>
+                            
+                                    <!-- Spacer to push the following buttons to the right -->
+                                    <div class="flex-grow-1"></div>
+                            
+                                    <!-- Right-aligned buttons -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-group">
+                                            <label for="startDate">Start Date:</label>
+                                            <input type="date" class="form-control" id="startDate">
+                                        </div>
+                                        <div class="form-group ml-3">
+                                            <label for="endDate">End Date:</label>
+                                            <input type="date" class="form-control" id="endDate">
+                                        </div>
+                            
+                                        <!-- Filter Button -->
+                                        <button class="btn btn-primary ml-3" onclick="filterByDateRange()">
+                                            <i class="bi bi-filter"></i> Filter
+                                        </button>
+                            
+                                        <!-- Add Booking Button -->
+                                      
+                                    </div>
                                 </div>
-                                <div class="table-responsive table--no-card m-b-30">
-                                    <table class="table table-borderless table-striped table-earning">
-                                        <thead>
-                                            <tr>
-                                                <th>Booking ID</th>
-                                                <th>User ID</th>
-                                                <th>Property Name</th>
-                                                <th>Purpose</th>
-                                               
-                                                <th>Start Time</th>
-                                                <th>End Time</th>
-                                               
-                                               
-                                            </tr>
-                                        </thead>
-                                        <tbody id="booking-table-body"></tbody>
-                                    </table>
-                                </div>
+                            </div>
+
+
+                            </div>
+                            <div class="table-responsive table--no-card m-b-30">
+                                <table class="table table-borderless table-striped table-earning">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Property Name</th>
+                                            <th>Purpose</th>
+
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="booking-table-body"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Jquery JS-->
@@ -197,6 +145,7 @@
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/booking.js"></script>
 
 </body>
 

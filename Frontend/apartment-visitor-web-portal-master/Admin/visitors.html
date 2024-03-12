@@ -31,109 +31,15 @@
     <link href="../vendor/select2/select2.min.css" rel="stylesheet" media="all">
     <link href="../vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
 
+    <script>
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
+        }
+    </script>
+
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <script>
-
-        function downloadVisitorsReport() {
-            // Implement logic for downloading expense report
-            alert('Downloading Expense Report');
-            // You can redirect to a report generation endpoint or trigger a download
-            // For illustration, an alert is shown here
-        }
-
-        // Fetch and include sidebar content
-        fetch('../includes/sidebarAdmin.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-        // Fetch and include header content
-       fetch('../includes/header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                var menu = $('.js-item-menu');
-                var sub_menu_is_showed = -1;
-
-                for (var i = 0; i < menu.length; i++) {
-                    $(menu[i]).on('click', function (e) {
-                        e.preventDefault();
-                        $('.js-right-sidebar').removeClass("show-sidebar");
-                        if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                            $(this).toggleClass('show-dropdown');
-                            sub_menu_is_showed = -1;
-                        }
-                        else {
-                            for (var i = 0; i < menu.length; i++) {
-                                $(menu[i]).removeClass("show-dropdown");
-                            }
-                            $(this).toggleClass('show-dropdown');
-                            sub_menu_is_showed = jQuery.inArray(this, menu);
-                        }
-                    });
-                }
-                $(".js-item-menu, .js-dropdown").click(function (event) {
-                    event.stopPropagation();
-                });
-
-                var userDataString = sessionStorage.getItem('user');
-
-
-                // Step 2: Parse the JSON string to get the user data as an object
-                var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                // Step 3: Update the content of the header dynamically if userData is not null
-                if (userData) {
-
-                    document.getElementById('adminNameLink').textContent = userData.username;
-                    document.getElementById('adminNameDropdown').textContent = userData.username;
-                } else {
-                    console.error('User data is missing or invalid.');
-                }
-            });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fetch visitor data using AJAX
-            fetchVisitorData();
-        });
-
-        function fetchVisitorData() {
-            // Make an AJAX call to your API endpoint for fetching visitor data
-            $.ajax({
-                url: 'http://localhost:62416/api/Visitor',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // Call a function to update the table with the fetched data
-                    displayVisitors(data);
-                },
-                error: function (error) {
-                    console.error('Error fetching visitor data:', error);
-                    // Handle error as needed
-                }
-            });
-        }
-
-        function displayVisitors(visitorData) {
-            const tableBody = document.querySelector('.table-earning tbody');
-            tableBody.innerHTML = '';
-
-            // Loop through the fetched data and append rows to the table
-            visitorData.forEach(function (visitor, index) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${visitor.VisitorName}</td>
-                    <td>${visitor.MobileNumber}</td>
-                    <td>${visitor.WhomToMeet}</td>
-                     <td>${visitor.ApartmentNo}</td>
-                    
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-    </script>
+   
 </head>
 
 <body class="animsition">
@@ -141,11 +47,6 @@
         <!-- HEADER MOBILE-->
         <div id="sidebar-container"></div>
         <!-- END HEADER MOBILE-->
-
-        <!-- MENU SIDEBAR-->
-        <!-- Include your menu sidebar content here -->
-        <!-- END MENU SIDEBAR-->
-
         <!-- PAGE CONTAINER-->
         <div class="page-container">
             <!-- HEADER DESKTOP-->
@@ -159,8 +60,21 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="mb-5">
-                                    <div class="float-right">
-                                        <button class="btn btn-success" onclick="downloadVisitorsReport()">
+                                    <div class="float-right" style="display: inline-block;">
+                                        <label for="startDate" style="margin-right: 5px;">Start Date:</label>
+                                        <input type="date" id="startDate" name="startDate" class="date-input"
+                                            style="margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                    
+                                        <label for="endDate" style="margin-right: 5px;">End Date:</label>
+                                        <input type="date" id="endDate" name="endDate" class="date-input"
+                                            style="margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                    
+                                        <button class="btn btn-primary" onclick="filterReport()" style="display: inline-block; margin-right: 10px;">
+                                            <i class="fa fa-filter"></i> Filter
+                                        </button>
+                                    
+                                        <button class="btn btn-success" onclick="downloadVisitorsReport()"
+                                            style="display: inline-block; margin-right: 10px;">
                                             <i class="fa fa-download"></i> Download Report
                                         </button>
                                     </div>
@@ -173,34 +87,11 @@
                                                 <th>Visitor Name</th>
                                                 <th>Contact Number</th>
                                                 <th>Whom To Visit</th>
-                                                <th>ApartmentNo</th>
+                                                <th>Unit No.</th>
                                             </tr>
                                         </thead>
-                                        <!-- <?php
-                                        $ret = mysqli_query($con, "select *from tblvisitor");
-                                        $cnt = 1;
-                                        while ($row = mysqli_fetch_array($ret)) {
-                                        ?> -->
                                         <tr>
-                                            <td>
-                                                <!-- <?php echo $cnt; ?> -->
-                                            </td>
-                                            <td>
-                                                <!-- <?php echo $row['VisitorName']; ?> -->
-                                            </td>
-                                            <td>
-                                                <!-- <?php echo $row['MobileNumber']; ?> -->
-                                            </td>
-                                            <td>
-                                                <!-- <?php echo $row['WhomtoMeet']; ?> -->
-                                            </td>
-                                            <td><a href="visitor-detail.html" title="View Full Details"><i
-                                                        class="fa fa-edit fa-1x"></i></a></td>
                                         </tr>
-                                        <!-- <?php
-                                            $cnt = $cnt + 1;
-                                        }
-                                        ?> -->
                                     </table>
                                 </div>
                             </div>
@@ -230,6 +121,7 @@
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/visitors.js"></script>
 
 </body>
 

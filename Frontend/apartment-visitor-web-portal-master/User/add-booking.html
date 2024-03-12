@@ -33,58 +33,13 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-        // Fetch and include sidebar content
-        fetch('../includes/sidebarUser.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-        // Fetch and include header content
-        fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
+        }
     </script>
+    <!-- Include external HTML files using JavaScript -->
+
 </head>
 
 <body class="animsition">
@@ -114,16 +69,22 @@
                                         <strong>Add</strong> New Booking
                                     </div>
                                     <div class="card-body card-block">
-                                        <form method="post" class="form-horizontal">
+                                        <form method="post" id="bookingForm" class="form-horizontal">
                                             <div class="row form-group">
                                                 <div class="col col-md-3">
                                                     <label for="propertyName" class="form-control-label">Property
                                                         Name</label>
                                                 </div>
                                                 <div class="col-12 col-md-9">
-                                                    <input type="text" id="propertyName" name="propertyName"
-                                                        placeholder="Property Name" class="form-control"
+                                                    <select id="propertyName" name="propertyName" class="form-control"
                                                         required="true">
+                                                        <option value="" disabled selected>Select Property Name</option>
+                                                        <option value="Hall">Hall</option>
+                                                        <option value="Swimming Pool">Swimming Pool</option>
+                                                        <option value="Parking area">Parking Area</option>
+                                                        <option value="Theater">Theater</option>
+
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -181,8 +142,8 @@
 
                                             <div class="card-footer">
                                                 <p style="text-align: center;">
-                                                    <button type="submit" name="submit" id="submit"
-                                                        class="btn btn-primary btn-sm">Add</button>
+                                                    <input type="submit" name="submit" id="submit"
+                                                        class="btn btn-primary btn-sm" />
                                                     <button type="reset" class="btn btn-danger btn-sm">Reset</button>
                                                 </p>
                                             </div>
@@ -214,56 +175,14 @@
     <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../vendor/select2/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/add-booking.js"></script>
+
+    <!-- Custom JS with Form Validation -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-                // ... (your existing code)
-
-                // Handle form submission
-                $('#submit').on('click', function (event) {
-                    event.preventDefault();
-
-                    // Get form data
-                    var bookingData = {
-                        User_ID : sessionStorage.getItem('userid'),
-                        PropertyName: $('#propertyName').val(),
-                        Purpose: $('#purpose').val(),
-                        Amount: $('#amount').val(),
-                        StartTime: formatDateTime($('#startTime').val()),
-                        EndTime: formatDateTime($('#endTime').val()),
-                        TransactionID: $('#transactionID').val()
-                    };
-                    console.log(bookingData);
-
-                    // Make AJAX call to add booking
-                    $.ajax({
-                        url: 'http://localhost:62416/api/User/PostBooking',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(bookingData),
-                        success: function (response) {
-                            console.log(response); // Log the response from the server
-                            alert('Booking submitted successfully');
-                            window.location.href = 'booking.html';
-                            // Optionally, redirect to the booking details page or perform any other actions
-                        },
-                        error: function (error) {
-                            console.error('Error submitting booking:', error);
-                            alert('Error submitting booking. Please try again.');
-                        }
-                    });
-                     function formatDateTime(dateTimeString) {
-                        var date = new Date(dateTimeString);
-                        // Format date in "YYYY-MM-DD HH:mm:ss" format
-                        var formattedDateTime = date.toISOString().slice(0, 19).replace("T", " ");
-                        return formattedDateTime;
-                    }
-                });
-
-                // ... (your existing code)
-            });
 
     </script>
 

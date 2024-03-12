@@ -16,30 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `notification`
+-- Table structure for table `maintenance`
 --
 
-DROP TABLE IF EXISTS `notification`;
+DROP TABLE IF EXISTS `maintenance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notification` (
-  `idNotification` int NOT NULL AUTO_INCREMENT,
-  `FromUser` varchar(45) DEFAULT NULL,
-  `ToUser` varchar(45) DEFAULT NULL,
-  `Message` varchar(500) DEFAULT NULL,
-  `Time` datetime DEFAULT (curdate()),
-  PRIMARY KEY (`idNotification`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `maintenance` (
+  `idMaintainance` int NOT NULL AUTO_INCREMENT,
+  `Unit_ID` int NOT NULL,
+  `Month` int NOT NULL,
+  `Year` int NOT NULL,
+  `PaymentDate` datetime NOT NULL,
+  `Amount` double NOT NULL,
+  `Transaction_ID` varchar(45) NOT NULL,
+  PRIMARY KEY (`idMaintainance`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `notification`
+-- Dumping data for table `maintenance`
 --
 
-LOCK TABLES `notification` WRITE;
-/*!40000 ALTER TABLE `notification` DISABLE KEYS */;
-INSERT INTO `notification` VALUES (2,'ishika','dimple','hello','2024-02-15 00:00:00'),(3,'dimple','yash','encryption','2024-02-15 06:57:55');
-/*!40000 ALTER TABLE `notification` ENABLE KEYS */;
+LOCK TABLES `maintenance` WRITE;
+/*!40000 ALTER TABLE `maintenance` DISABLE KEYS */;
+INSERT INTO `maintenance` VALUES (1,1,2,2024,'2024-02-15 06:28:10',500,'string'),(6,1,3,2024,'2024-02-27 11:48:00',3000,'123'),(7,1,6,2024,'2024-02-29 11:36:00',3000,'123'),(12,1,1,2024,'2024-03-30 11:53:00',3000,'123'),(13,6,3,2024,'2024-03-04 11:30:00',3000,'123');
+/*!40000 ALTER TABLE `maintenance` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:24
+-- Dump completed on 2024-03-12 16:10:15

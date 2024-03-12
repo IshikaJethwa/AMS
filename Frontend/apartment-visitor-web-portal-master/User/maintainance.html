@@ -33,81 +33,12 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-        // Fetch and include sidebar content
-        fetch('../includes/sidebarUser.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-        // Fetch and include header content
-        fetch('../includes/header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                var menu = $('.js-item-menu');
-                var sub_menu_is_showed = -1;
-
-                for (var i = 0; i < menu.length; i++) {
-                    $(menu[i]).on('click', function (e) {
-                        e.preventDefault();
-                        $('.js-right-sidebar').removeClass("show-sidebar");
-                        if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                            $(this).toggleClass('show-dropdown');
-                            sub_menu_is_showed = -1;
-                        } else {
-                            for (var i = 0; i < menu.length; i++) {
-                                $(menu[i]).removeClass("show-dropdown");
-                            }
-                            $(this).toggleClass('show-dropdown');
-                            sub_menu_is_showed = jQuery.inArray(this, menu);
-                        }
-                    });
-                }
-                $(".js-item-menu, .js-dropdown").click(function (event) {
-                    event.stopPropagation();
-                });
-
-                var userDataString = sessionStorage.getItem('user');
-
-                // Step 2: Parse the JSON string to get the user data as an object
-                var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                // Step 3: Update the content of the header dynamically if userData is not null
-                if (userData) {
-                    document.getElementById('adminNameLink').textContent = userData.username;
-                    document.getElementById('adminNameDropdown').textContent = userData.username;
-                } else {
-                    console.error('User data is missing or invalid.');
-                }
-            });
-
-        // Function to handle the AJAX call for adding maintenance record
-        function addMaintenanceRecord() {
-            // Serialize form data
-            var formData = $('#maintenanceForm').serialize();
-
-            // Perform AJAX request
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:62416/api/User/PayMaintenance', // Replace with your actual server endpoint
-                data: formData,
-                success: function (response) {
-                    alert('Maintenance record added successfully.');
-                    window.location.href = 'payment-success.html';
-                    // Optionally, you can handle the response from the server r
-                },
-                error: function (error) {
-                    alert('Error adding maintenance record:', error);
-                    // Optionally, you can handle the error response
-                }
-            });
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
         }
-
-
-
-
     </script>
+
 </head>
 
 <body class="animsition">
@@ -159,8 +90,20 @@
                                                     <label for="text-input" class=" form-control-label">Month</label>
                                                 </div>
                                                 <div class="col-12 col-md-9">
-                                                    <input type="text" id="month" name="month" placeholder="Enter Month"
-                                                        class="form-control" required="true">
+                                                    <select class="form-control" id="month" name="month">
+                                                        <option value="1">January</option>
+                                                        <option value="2">February</option>
+                                                        <option value="3">March</option>
+                                                        <option value="4">April</option>
+                                                        <option value="5">May</option>
+                                                        <option value="6">June</option>
+                                                        <option value="7">July</option>
+                                                        <option value="8">August</option>
+                                                        <option value="9">September</option>
+                                                        <option value="10">October</option>
+                                                        <option value="11">November</option>
+                                                        <option value="12">December</option>
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -243,43 +186,13 @@
     <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../vendor/select2/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Use AJAX or fetch to get user details from the server and update the HTML elements
-            // Example:
-            var userid;
-            const userDataString = sessionStorage.getItem('user');
+    <script src="js/add-maintainance.js">
 
-            // Check if user data exists
-            if (userDataString) {
-                // Parse the JSON string to get the user data as an object
-                const userData = JSON.parse(userDataString);
-
-                // Send a POST request to the server to get user details
-                $.ajax({
-                    url: 'http://localhost:62416/api/getUser',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        role: userData.role,
-                        username: userData.username,
-                        password: userData.password
-                    }),
-                    success: function (user) {
-                        $('#Unit_ID').val(user.UnitID);
-
-                    },
-                    error: function (error) {
-                        alert('Error:', error);
-                    }
-                });
-            } else {
-                alert('User data is missing or invalid.');
-            }
-        });
     </script>
 
 </body>

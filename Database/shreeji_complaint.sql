@@ -16,28 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `superadmin`
+-- Table structure for table `complaint`
 --
 
-DROP TABLE IF EXISTS `superadmin`;
+DROP TABLE IF EXISTS `complaint`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `superadmin` (
-  `ID` int NOT NULL AUTO_INCREMENT,
-  `Username` varchar(45) DEFAULT NULL,
-  `Password` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `complaint` (
+  `idComplaint` int NOT NULL AUTO_INCREMENT,
+  `ComplaintTitle` varchar(45) DEFAULT NULL,
+  `Description` varchar(100) DEFAULT NULL,
+  `Status` varchar(45) DEFAULT NULL,
+  `ResolvedBy` varchar(45) DEFAULT NULL,
+  `userId` int DEFAULT NULL,
+  PRIMARY KEY (`idComplaint`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `superadmin`
+-- Dumping data for table `complaint`
 --
 
-LOCK TABLES `superadmin` WRITE;
-/*!40000 ALTER TABLE `superadmin` DISABLE KEYS */;
-INSERT INTO `superadmin` VALUES (1,'Ishika','ishika123');
-/*!40000 ALTER TABLE `superadmin` ENABLE KEYS */;
+LOCK TABLES `complaint` WRITE;
+/*!40000 ALTER TABLE `complaint` DISABLE KEYS */;
+INSERT INTO `complaint` VALUES (2,'ishika','abc','Resolved','efds',3),(7,'dimpple','kopkdewhdf','Resolved','5002',1),(8,'yash','yash','Resolved','5002',1),(14,'Lift Fitting','lift nu kaam proper thatu nathi','pending',NULL,1),(15,'gardening','pani proper pivdavta nathi (tree ne)','pending',NULL,1);
+/*!40000 ALTER TABLE `complaint` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:23
+-- Dump completed on 2024-03-12 16:10:14

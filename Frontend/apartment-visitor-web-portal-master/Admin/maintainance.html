@@ -33,133 +33,73 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fetch and include sidebar content
-            fetch('../includes/sidebarAdmin.html')
-                .then(response => response.text())
-                .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-            // Fetch and include header content
-            fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
-
-            function fetchMaintenanceData(url) {
-                $.ajax({
-                    type: 'GET',
-                    url: url,
-                    success: function (maintenanceData) {
-                        // Display maintenance details
-                        const tableBody = document.getElementById('maintenance-table-body');
-                        const tableHeaders = generateTableHeaders(maintenanceData);
-
-                        // Clear existing headers and rows
-                        tableBody.innerHTML = '';
-
-                        const table = document.getElementById('maintenance-table');
-                        const thead = document.getElementById('maintenance-table-thead');
-                        thead.innerHTML = ''; // Clear existing headers
-
-                        const headerRow = document.createElement('tr');
-                        tableHeaders.forEach(header => {
-                            const th = document.createElement('th');
-                            th.textContent = header;
-                            headerRow.appendChild(th);
-                        });
-                        thead.appendChild(headerRow);
-                        headerRow.classList.add('table-header'); // Add class for styling
-
-                        maintenanceData.forEach((maintenance, index) => {
-                            const row = document.createElement('tr');
-                            tableHeaders.forEach(header => {
-                                const td = document.createElement('td');
-                                td.textContent = maintenance[header];
-                                row.appendChild(td);
-                            });
-                            // Add even/odd class for alternating row colors
-                            row.classList.add(index % 2 === 0 ? 'even-row' : 'odd-row');
-                            tableBody.appendChild(row);
-                        });
-                    },
-                    error: function (error) {
-                        alert('Error fetching maintenance details:', error);
-                    }
-                });
-            }
-
-            function generateTableHeaders(data) {
-                if (data.length > 0) {
-                    return Object.keys(data[0]); // Assuming the keys of the first item in the array represent headers
-                } else {
-                    return [];
-                }
-            }
-
-            // Initial load: Paid maintenance
-            fetchMaintenanceData('http://localhost:62416/api/Admin/ApprovedMaintenance');
-
-            // Button click event for Paid maintenance
-            document.getElementById('btnPaid').addEventListener('click', function () {
-                fetchMaintenanceData('http://localhost:62416/api/Admin/ApprovedMaintenance');
-            });
-
-            // Button click event for Pending maintenance
-            document.getElementById('btnPending').addEventListener('click', function () {
-                fetchMaintenanceData('http://localhost:62416/api/Admin/PendingMaintenance');
-            });
-        });
-
-        function openAddMaintenanceModal() {
-            // Redirect to AddMaintenance.html or implement modal logic
-            window.location.href = 'add-maintenance.html';
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
         }
-
     </script>
+
+    <!-- Include external HTML files using JavaScript -->
+
 </head>
 
 <body class="animsition">
+    <div class="modal fade" id="dateRangeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Select Date Range</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Datepicker inputs for starting and ending dates -->
+                    <div class="form-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="month" class="form-control" id="startMonth" value="2024-01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date:</label>
+                        <input type="month" class="form-control" id="endMonth" value="2024-12" required>
+                    </div>
+
+                    <!-- Download button inside the modal -->
+                    <button type="button" class="btn btn-primary" id="downloadButton">Download</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="pendingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Select Date Range</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Datepicker inputs for starting and ending dates -->
+                    <div class="form-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="month" class="form-control" id="pendingstartMonth" value="2024-01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date:</label>
+                        <input type="month" class="form-control" id="pendingendMonth" value="2024-12" required>
+                    </div>
+
+                    <!-- Download button inside the modal -->
+                    <button type="button" class="btn btn-primary" id="pendingdownloadButton">Download</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="page-wrapper">
         <!-- HEADER MOBILE-->
         <div id="sidebar-container"></div>
@@ -181,14 +121,48 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="btn-group mb-3 ">
-                                    <button id="btnPaid" type="button" class="btn btn-success m-2">Paid
-                                        Maintenance</button>
-                                    <button id="btnPending" type="button" class="btn btn-warning m-2">Pending
-                                        Maintenance</button>
+                                <div class="card bg-dark text-white">
+                                    <img class="card-img"
+                                        src="https://image.slidesdocs.com/responsive-images/background/modern-business-financial-simple-statement-project-proposal-abstract-powerpoint-background_eba484f61c__960_540.jpg"
+                                        height="200px" alt="Card image" style="width: 1500px; height: 150px;">
+                                    <div class="card-img-overlay">
+                                        <strong>
+                                            <h3 class="card-title text-center fg" id="available-balance"
+                                                style="color: rgb(0,104,200);">
+                                                ..Fetching
+                                            </h3>
+                                        </strong>
+                                        <br>
+                                        <div class="card-text d-flex flex-row justify-content-around">
+                                            <h4 class="card-text fg" id="total-income" style="color: rgb(100,206,196);">
+                                                Total Income</h4>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <!-- Left-aligned buttons -->
+                                    <div class="btn-group" role="group">
+                                        <button id="btnPaid" type="button" class="btn btn-success">Paid
+                                            Maintenance</button>
+                                        <button id="btnPending" type="button" class="btn btn-warning">Pending
+                                            Maintenance</button>
+                                    </div>
+
+                                    <!-- Right-aligned button -->
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-warning" id="downloadPendingButton"><i
+                                                class="fa fa-download"></i>Download Pending</button>
+
+                                        <button class="btn btn-success" id="btnDownloadReport">
+                                            <i class="fa fa-download"></i> Download Report
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="table-responsive table--no-card m-b-30">
-                                    
+
                                     <table id="maintenance-table"
                                         class="table table-borderless table-striped table-earning">
                                         <thead id="maintenance-table-thead"></thead>
@@ -219,9 +193,11 @@
     <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../vendor/select2/select2.min.js"></script>
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/maintainance.js"></script>
 
 </body>
 

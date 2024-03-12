@@ -28,10 +28,10 @@ namespace shreeji.Models
         public int User_ID { get; set; }
         public string PropertyName { get; set; }
         public string Purpose { get; set; }
-        public double Amount { get; set; }
+        public double Amount { get; set; } = 0;
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public string TransactionID { get; set; }
+        public string TransactionID { get; set; } = string.Empty;
         // Add other properties as needed
     }
     public class Visitors
@@ -54,7 +54,7 @@ namespace shreeji.Models
         public string Status { get; set; } = "pending";
         public string ResolvedBy { get; set; }
         public int UserId { get; set; }
-        public int FloorId { get; set; }
+      
     }
 
     public class Floor
@@ -106,7 +106,13 @@ namespace shreeji.Models
         public string RentalName { get; set; }
     }
 
-   
+    public class ChangePasswordRequest
+    {
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
+    }
+
+
     public class User
     {
         public int UserID_id { get; set; }

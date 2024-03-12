@@ -16,29 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `meeting`
+-- Table structure for table `visitors`
 --
 
-DROP TABLE IF EXISTS `meeting`;
+DROP TABLE IF EXISTS `visitors`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `meeting` (
-  `MeetingID` int NOT NULL AUTO_INCREMENT,
-  `Title` varchar(255) NOT NULL,
-  `Description` text,
-  `DateTime` datetime NOT NULL,
-  PRIMARY KEY (`MeetingID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `visitors` (
+  `VisitorID` int NOT NULL AUTO_INCREMENT,
+  `VisitorName` varchar(255) NOT NULL,
+  `MobileNumber` varchar(15) NOT NULL,
+  `ApartmentNo` varchar(20) NOT NULL,
+  `WhomToMeet` varchar(255) NOT NULL,
+  `ReasonToMeet` varchar(255) NOT NULL,
+  `EnteringTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  `OutingTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`VisitorID`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `meeting`
+-- Dumping data for table `visitors`
 --
 
-LOCK TABLES `meeting` WRITE;
-/*!40000 ALTER TABLE `meeting` DISABLE KEYS */;
-INSERT INTO `meeting` VALUES (1,'Fighting','with Krishi','2024-02-15 06:57:55');
-/*!40000 ALTER TABLE `meeting` ENABLE KEYS */;
+LOCK TABLES `visitors` WRITE;
+/*!40000 ALTER TABLE `visitors` DISABLE KEYS */;
+INSERT INTO `visitors` VALUES (2,'pooja','12354466','1','kaa','kam','2024-01-20 10:32:18','2024-02-21 17:46:00'),(3,'dimple','12334','1','ankit','personal','2024-02-19 17:50:35','2024-03-24 17:51:00'),(6,'yash','1234365','1','khushi','personal','2024-02-21 10:08:41','2024-02-24 10:10:00'),(7,'abc','1234','1','xyz','private','2024-02-20 12:17:08',NULL);
+/*!40000 ALTER TABLE `visitors` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:23
+-- Dump completed on 2024-03-12 16:10:15

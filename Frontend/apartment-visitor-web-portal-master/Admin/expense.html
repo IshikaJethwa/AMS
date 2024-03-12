@@ -8,7 +8,20 @@
     <meta name="description" content="au theme template">
     <meta name="author" content="Hau Nguyen">
     <meta name="keywords" content="au theme template">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Unbounded:wght@200..900&display=swap"
+        rel="stylesheet">
+    <style>
+        .fg {
+            font-family: "Unbounded";
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
     <!-- Title Page-->
     <title>Expense Details</title>
 
@@ -33,96 +46,62 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-        // Dummy expense data for illustration purposes
-        const expenseData = [
-            { ExpensesID: 1, Title: 'Office Supplies', Amount: 100.00, DateTime: '2024-02-15' },
-            { ExpensesID: 2, Title: 'Utility Bills', Amount: 250.00, DateTime: '2024-02-16' },
-            // Add more expense data as needed
-        ];
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fetch and include sidebar content
-            fetch('../includes/sidebarAdmin.html')
-                .then(response => response.text())
-                .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-            // Fetch and include header content
-            fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
-            // Display expense details
-            const tableBody = document.getElementById('expense-table-body');
-
-            expenseData.forEach(expense => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${expense.ExpensesID}</td>
-                    <td>${expense.Title}</td>
-                    <td>${expense.Amount}</td>
-                    <td>${expense.DateTime}</td>
-                    <td><a href="#" title="View Full Details"><i class="fa fa-edit fa-1x"></i></a></td>
-                `;
-                tableBody.appendChild(row);
-            });
-        });
-
-        function openAddExpenseModal() {
-            // Redirect to AddExpense.html or implement modal logic
-            window.location.href = 'add-expense.html';
-        }
-
-        function downloadExpenseReport() {
-            // Implement logic for downloading expense report
-            alert('Downloading Expense Report');
-            // You can redirect to a report generation endpoint or trigger a download
-            // For illustration, an alert is shown here
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
         }
     </script>
+    <!-- Include external HTML files using JavaScript -->
+
+    <!-- Jquery JS-->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+
+<!-- Include jsPDF library -->
+
+
+
 </head>
 
 <body class="animsition">
+    <div class="modal fade" id="updateExpenseModal" tabindex="-1" role="dialog"
+        aria-labelledby="updateExpenseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateExpenseModalLabel">Update Expense</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateExpenseForm">
+                        <div class="form-group">
+                            <label for="expensesID">ExpensesID</label>
+                            <input type="text" class="form-control" id="expensesID" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" name="title" class="form-control" id="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input type="text" class="form-control" id="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="datetime">DateTime</label>
+                            <input type="datetime-local" class="form-control" id="datetime" required>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-wrapper">
         <!-- HEADER MOBILE-->
         <div id="sidebar-container"></div>
@@ -144,16 +123,42 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-lg-12">
+                                <div class="card bg-dark text-white" >
+                                    <img class="card-img"
+                                        src="https://image.slidesdocs.com/responsive-images/background/modern-business-financial-simple-statement-project-proposal-abstract-powerpoint-background_eba484f61c__960_540.jpg"
+                                        height="200px" alt="Card image" style="width: 1500px; height: 150px;">
+                                    <div class="card-img-overlay pdfcontent" id="pdf-content">
+                                        <strong>
+                                            <h3 class="card-title text-center fg" id="available-balance"
+                                                style="color: rgb(0,104,200);">
+                                                ..Fetching
+                                            </h3>
+                                        </strong>
+                                        <br>
+                                        <div class="card-text d-flex flex-row justify-content-around">
+                                            <h4 class="card-text fg" id="total-income" style="color: rgb(100,206,196);">
+                                                Total Income</h4>
+                                            <h4 class="card-text fg" id="total-expense"
+                                                style="color : rgb(254,153,121)">Total Expense</h4>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
                                 <div class="mb-2">
                                     <button class="btn btn-primary" onclick="openAddExpenseModal()">
                                         <i class="bi bi-plus"></i>Add Expense</button>
                                     <div class="float-right">
-                                        <button class="btn btn-success" onclick="downloadExpenseReport()">
+                                        <button class="btn btn-info" onclick="filterDataByMonth()">
+                                            <i class="fa fa-filter"></i> Filter by Month
+                                        </button>
+                                        <button class="btn btn-success" onclick="downloadPDF()">
                                             <i class="fa fa-download"></i> Download Report
                                         </button>
                                     </div>
                                 </div>
-                                <div class="table-responsive table--no-card m-b-30">
+                                <div class="table-responsive table--no-card m-b-30 " id="tablecontent">
                                     <table class="table table-borderless table-striped table-earning">
                                         <thead>
                                             <tr>
@@ -175,8 +180,7 @@
         </div>
     </div>
 
-    <!-- Jquery JS-->
-    <script src="../vendor/jquery-3.2.1.min.js"></script>
+
     <!-- Bootstrap JS-->
     <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
     <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
@@ -191,9 +195,13 @@
     <script src="../vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../vendor/select2/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/expense.js"></script>
 
 </body>
 

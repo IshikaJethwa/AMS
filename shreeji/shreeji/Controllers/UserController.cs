@@ -1,6 +1,7 @@
 ﻿using EmployeeService.Auth;
 using shreeji.Models;
 using shreeji.Service;
+using System;
 using System.Collections.Generic;
 using System.Web.Http;
 
@@ -37,8 +38,9 @@ namespace shreeji.Controllers
 
             return Ok(user);
         }
+       
 
-        [HttpPut]
+            [HttpPut]
         [Route("api/User/{id}")]
         public IHttpActionResult UpdateUserProfile(int id, [FromBody] User updatedUser)
         {
@@ -84,15 +86,27 @@ namespace shreeji.Controllers
 
             return Ok(_bookingService.GetAllBookings());
         }
-
         [HttpPost]
         [Route("api/User/PostBooking")]
         public IHttpActionResult PostBooking([FromBody] Booking booking)
         {
-            // Implement logic to process a booking
-            _bookingService.AddBooking(booking);
+            try
+            {
+                // Implement logic to process a booking
+                _bookingService.AddBooking(booking);
 
-            return Ok("Booking submitted successfully");
+                return Ok("Booking submitted successfully");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle the specific exception (e.g., duplicate entry)
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                // Handle other exceptions if needed
+                return InternalServerError();
+            }
         }
         [HttpGet]
         [Route("api/User/GetBookingDetails/{id}")]
@@ -100,6 +114,20 @@ namespace shreeji.Controllers
         {
 
             return Ok(_bookingService.GetBookingById(id));
+        }
+        [HttpDelete]
+        [Route("api/User/CancelBooking/{id}")]
+        public IHttpActionResult cancelBooking(int id)
+        {
+            _complaintService.CancelBooking(id);
+            return Ok();
+        }
+        [HttpPut]
+        [Route("api/User/UpdateBooking/{id}")]
+        public IHttpActionResult UpdateBooking(int id,Booking objbook)
+        {
+            _bookingService.UpdateBooking(id, objbook);
+            return Ok();
         }
         [HttpGet]
         [Route("api/User/CheckMaintanace/{unitid}")]

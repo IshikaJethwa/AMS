@@ -16,30 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `unit`
+-- Table structure for table `booking`
 --
 
-DROP TABLE IF EXISTS `unit`;
+DROP TABLE IF EXISTS `booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `unit` (
-  `Unit_Id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `OwnerName` varchar(45) DEFAULT NULL,
-  `IsRental` tinyint DEFAULT NULL,
-  `Rental_Name` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`Unit_Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
+CREATE TABLE `booking` (
+  `BookingID` int NOT NULL AUTO_INCREMENT,
+  `User_ID` int DEFAULT NULL,
+  `PropertyName` varchar(45) DEFAULT NULL,
+  `Purpose` varchar(100) DEFAULT NULL,
+  `Amount` double DEFAULT NULL,
+  `StartTime` datetime DEFAULT NULL,
+  `EndTime` datetime DEFAULT NULL,
+  `TransactionID` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`BookingID`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `unit`
+-- Dumping data for table `booking`
 --
 
-LOCK TABLES `unit` WRITE;
-/*!40000 ALTER TABLE `unit` DISABLE KEYS */;
-INSERT INTO `unit` VALUES (1,1,'Khushi',0,'no');
-/*!40000 ALTER TABLE `unit` ENABLE KEYS */;
+LOCK TABLES `booking` WRITE;
+/*!40000 ALTER TABLE `booking` DISABLE KEYS */;
+INSERT INTO `booking` VALUES (1,1,'Hall','Birthday',1000,'2024-02-13 11:55:05','2024-02-13 11:55:05','string'),(2,2,'Hall','Baby Shower',2000,'2024-02-15 05:40:20','2024-02-15 05:40:20','string'),(5,1,'pool','bechlor',3000,'2024-02-29 10:12:00','2024-02-29 10:12:00','ewffgvterw'),(9,5004,'theater','party',0,'2024-03-01 12:14:00','2024-03-02 12:14:00',NULL),(10,1,'','acc',3000,'0001-01-01 00:00:00','2024-01-11 09:03:00','ewffgvterw'),(11,1,'pool','bechlor',3000,'2024-03-21 09:26:00','2024-03-30 09:26:00','ewffgvterw'),(13,5002,'gfh','bechlor',0,'2024-03-04 20:23:00','2024-03-04 22:23:00','');
+/*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:23
+-- Dump completed on 2024-03-12 16:10:15

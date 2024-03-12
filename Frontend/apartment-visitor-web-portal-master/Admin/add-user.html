@@ -33,104 +33,12 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-
-    <!-- Include external HTML files using JavaScript -->
-    <!-- Add this script after including jQuery -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fetch and include sidebar content
-            fetch('../includes/sidebarAdmin.html')
-                .then(response => response.text())
-                .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-            // Fetch and include header content
-            fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
-
-            $('#user-form').submit(function (event) {
-                // Prevent the default form submission
-                event.preventDefault();
-
-                // Fetch form details
-                var username = $('#username').val();
-                var password = $('#password').val();
-                var unitID = $('#unitID').val();
-                var name = $('#name').val();
-                var email = $('#email').val();
-                var mobileNo = $('#mobileNo').val();
-
-                // Create an object with form details
-                var userObject = {
-                    User_username: username,
-                    User_Password: password,
-                    UnitID: unitID,
-                    Name: name,
-                    Email: email,
-                    MobileNo: mobileNo
-                };
-
-                // Make an AJAX POST request
-                fetch('http://localhost:62416/api/Admin/User', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userObject)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Handle the success response
-                        alert('User added successfully!'); // Show an alert
-                        window.location.href = 'users.html'; // Redirect to user.html
-                    })
-                    .catch(error => {
-                        // Handle the error response (if needed)
-                        alert('Error submitting form:', error);
-                    });
-            });
-        });
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
+        }
     </script>
+
 
 </head>
 
@@ -272,6 +180,7 @@
 
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/adduser.js"></script>
 
 </body>
 

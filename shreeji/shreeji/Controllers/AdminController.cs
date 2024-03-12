@@ -1,6 +1,8 @@
 ﻿using EmployeeService.Auth;
 using shreeji.Models;
 using shreeji.Service;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Web.Http;
@@ -31,8 +33,7 @@ namespace shreeji.Controllers
         //Get All user
         [HttpGet]
         [Route("api/Admin/User")]
-       // [BLBasicAuthentication]
-       // [BLBasicAuthorization(Roles = "Admin")]
+      
         public IHttpActionResult GetUserProfile()
         {
             var user = _userService.GetAllUsers();
@@ -59,6 +60,25 @@ namespace shreeji.Controllers
             return Ok(user);
         }
 
+        [HttpPut]
+        [Route("api/User/ChangePassword/{id}")]
+        public IHttpActionResult ChangePassword(int id, [FromBody] ChangePasswordRequest request)
+        {
+
+
+            // Call the ChangePassword method from AdminService
+            bool passwordChanged = _userService.ChangePassword(id, request.CurrentPassword, request.NewPassword);
+
+            if (passwordChanged)
+            {
+                return Ok("Password changed successfully");
+            }
+            else
+            {
+                return BadRequest("Incorrect current password");
+            }
+        }
+
         [HttpPatch]
         [Route("api/Admin/User/{id}")]
         public IHttpActionResult UpdateUserProfile(int id ,[FromBody] User updatedUser)
@@ -67,15 +87,25 @@ namespace shreeji.Controllers
 
             return Ok("updated");
         }
-
         [HttpPost]
         [Route("api/Admin/User")]
         public IHttpActionResult CreateUser([FromBody] User newUser)
         {
-
-            _userService.AddUser(newUser);
-
-            return Ok("Added");
+            try
+            {
+                _userService.AddUser(newUser);
+                return Ok("Added");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle the duplicate entry error
+                return BadRequest(ex.Message); // Return a 400 Bad Request status with the error message
+            }
+            catch (Exception)
+            {
+                // Handle other exceptions if needed
+                return InternalServerError(); // Return a 500 Internal Server Error status
+            }
         }
 
         [HttpDelete]
@@ -157,6 +187,39 @@ namespace shreeji.Controllers
 
             return Ok("Meeting updated successfully");
         }
+        [HttpGet]
+        [Route("api/Admin/GetAllExpenses")]
+        public IHttpActionResult GetAllExpenses()
+        {
+            var expensesList = _expensesService.GetAllExpenses();
+            return Ok(expensesList);
+        }
+
+        [HttpGet]
+        [Route("api/Admin/GetExpensesById/{expensesId}")]
+        public IHttpActionResult GetExpensesById(int expensesId)
+        {
+            var expenses = _expensesService.GetExpensesById(expensesId);
+            if (expenses != null)
+                return Ok(expenses);
+            else
+                return NotFound(); // Or return BadRequest("Expenses not found");
+        }
+        [HttpPut]
+        [Route("api/Admin/UpdateExpenses")]
+        public IHttpActionResult UpdateExpenses([FromBody] Expenses expenses)
+        {
+            _expensesService.UpdateExpenses(expenses);
+            return Ok("Expenses updated successfully");
+        }
+
+        [HttpDelete]
+        [Route("api/Admin/DeleteExpenses/{expensesId}")]
+        public IHttpActionResult DeleteExpenses(int expensesId)
+        {
+            _expensesService.DeleteExpenses(expensesId);
+            return Ok("Expenses deleted successfully");
+        }
 
         // Post Expenses
         [HttpPost]
@@ -176,6 +239,120 @@ namespace shreeji.Controllers
             var expensesReport = _expensesService.GenerateExpensesReport();
 
             return Ok($"Expenses report: {expensesReport}");
+        }
+
+        [HttpGet]
+        [Route("api/Admin/GetAvailableBalance")]
+        public IHttpActionResult GetAvailableBalance()
+        {
+            try
+            {
+                double availableBalance = _expensesService.GetAvailableBalance();
+                return Ok($"Available Balance: {availableBalance}");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting available balance.", ex));
+            }
+        }
+
+        [HttpGet]
+        [Route("api/Admin/GetTotalmaintanance")]
+        public IHttpActionResult GetTotalmaintanance()
+        {
+            try
+            {
+                double availableBalance = _expensesService.GetTotalMaintanance();
+                return Ok($"Total Maintanance Balance: {availableBalance}");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting available balance.", ex));
+            }
+        }
+        [HttpGet]
+        [Route("api/Admin/GetTotalBookingFund")]
+        public IHttpActionResult GetTotalBookingFund()
+        {
+            try
+            {
+                double availableBalance = _expensesService.GetTotalBookingAmount();
+                return Ok($"Total Booking Balance: {availableBalance}");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting available balance.", ex));
+            }
+        }
+
+        [HttpGet]
+        [Route("api/Admin/GetTotalExpense")]
+        public IHttpActionResult GetTotalExpense()
+        {
+            try
+            {
+                double availableBalance = _expensesService.GetTotalExpense();
+                return Ok($"Total Expense: {availableBalance}");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting available balance.", ex));
+            }
+        }
+
+        [HttpGet]
+        [Route("api/Admin/GetMaintancebyMonth/{startmonth}/{endmonth}")]
+        public IHttpActionResult GetMaintancebyMonth(int startmonth , int endmonth)
+        {
+            try
+            {
+             
+                return Ok(_maintenanceService.GenerateMaintancebymonth(startmonth, endmonth));
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting available balance.", ex));
+            }
+        }
+        [HttpGet]
+        [Route("api/Admin/GetExpensesByStartEndMonth/{startmonth}/{endmonth}")]
+        public IHttpActionResult GetExpensesByStartEndMonth(int startMonth, int endMonth)
+        {
+            try
+            {
+                // Call the new method from ExpensesService
+                IEnumerable<Expenses> expenses = _expensesService.GetExpensesByStartEndMonth(startMonth, endMonth);
+
+                // Return the result
+                return Ok(expenses);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and return an error response if needed
+                return InternalServerError(ex);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/Expenses/GetTotalFunds")]
+        public IHttpActionResult GetTotalFunds()
+        {
+            try
+            {
+                // Call the GetTotalFunds method from ExpensesService
+                double totalFunds = _expensesService.GetTotalFunds();
+                return Ok($"Total Funds: {totalFunds}");
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // Generate Report Expenses
@@ -224,7 +401,21 @@ namespace shreeji.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
+        [HttpGet]
+        [Route("api/Admin/GetPendingMaintenanceByMonth/{startmonth}/{endmonth}")]
+        public IHttpActionResult GetMaintanceByMonth(int startmonth, int endmonth)
+        {
+            try
+            {
+                var maintenanceByMonth = _maintenanceService.GetPendingMaintenanceByMonth(startmonth, endmonth);
+                return Ok(maintenanceByMonth);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return InternalServerError(new Exception("Error getting maintenance by month.", ex));
+            }
+        }
         // Generate Report of Booking
         [HttpGet]
         [Route("api/Admin/GenerateReportBooking")]

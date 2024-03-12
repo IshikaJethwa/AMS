@@ -3,7 +3,7 @@ using shreeji.Connection;
 using shreeji.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 
 namespace shreeji.Service
 {
@@ -101,7 +101,7 @@ namespace shreeji.Service
                                 Status = reader["Status"].ToString(),
                                 ResolvedBy = reader["ResolvedBy"].ToString(),
                                 UserId = Convert.ToInt32(reader["UserId"]),
-                               // FloorId = Convert.ToInt32(reader["FloorId"])
+                               
                             });
                         }
                     }
@@ -133,7 +133,7 @@ namespace shreeji.Service
                                 Status = reader["Status"].ToString(),
                                 ResolvedBy = reader["ResolvedBy"].ToString(),
                                 UserId = Convert.ToInt32(reader["UserId"]),
-                                FloorId = Convert.ToInt32(reader["FloorId"])
+                              
                             });
                         }
                     }
@@ -173,7 +173,20 @@ namespace shreeji.Service
                 }
             }
 
-            return null;
+            
+        }
+        public void CancelBooking(int bookingId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(Connections.connection))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("DELETE FROM booking WHERE BookingID = @id", connection))
+                {
+                    cmd.Parameters.AddWithValue("@id", bookingId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
     }

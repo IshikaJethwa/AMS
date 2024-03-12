@@ -1,5 +1,6 @@
 ﻿using shreeji.Models;
 using shreeji.Service;
+using System;
 using System.Collections.Generic;
 using System.Web.Http;
 
@@ -45,11 +46,21 @@ public class SuperAdminController : ApiController
     [Route("api/SuperAdmin/Admin")]
     public IHttpActionResult PostAdmin([FromBody] Admin admin)
     {
-
-        _adminService.AddAdmin(admin);
-
-
-        return Ok("Added");
+        try
+        {
+            _adminService.AddAdmin(admin);
+            return Ok("Added");
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Handle the duplicate entry error
+            return BadRequest("Error: Duplicate entry. The username is already taken.");
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions if needed
+            return InternalServerError(ex);
+        }
     }
 
     [HttpPut]
@@ -81,5 +92,23 @@ public class SuperAdminController : ApiController
 
     }
 
+    [HttpPut]
+    [Route("api/SuperAdmin/Admin/ChangePassword/{id}")]
+    public IHttpActionResult ChangePassword(int id, [FromBody] ChangePasswordRequest request)
+    {
+       
+
+        // Call the ChangePassword method from AdminService
+        bool passwordChanged = _adminService.ChangePassword(id, request.CurrentPassword, request.NewPassword);
+
+        if (passwordChanged)
+        {
+            return Ok("Password changed successfully");
+        }
+        else
+        {
+            return BadRequest("Incorrect current password");
+        }
+    }
 
 }

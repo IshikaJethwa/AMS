@@ -16,32 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `complaint`
+-- Table structure for table `notification`
 --
 
-DROP TABLE IF EXISTS `complaint`;
+DROP TABLE IF EXISTS `notification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `complaint` (
-  `idComplaint` int NOT NULL AUTO_INCREMENT,
-  `ComplaintTitle` varchar(45) DEFAULT NULL,
-  `Description` varchar(100) DEFAULT NULL,
-  `Status` varchar(45) DEFAULT NULL,
-  `ResolvedBy` varchar(45) DEFAULT NULL,
-  `userId` int DEFAULT NULL,
-  `FloorId` int DEFAULT NULL,
-  PRIMARY KEY (`idComplaint`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `notification` (
+  `idNotification` int NOT NULL AUTO_INCREMENT,
+  `FromUser` varchar(45) DEFAULT NULL,
+  `ToUser` varchar(45) DEFAULT NULL,
+  `Message` varchar(500) DEFAULT NULL,
+  `Time` datetime DEFAULT (curdate()),
+  PRIMARY KEY (`idNotification`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `complaint`
+-- Dumping data for table `notification`
 --
 
-LOCK TABLES `complaint` WRITE;
-/*!40000 ALTER TABLE `complaint` DISABLE KEYS */;
-INSERT INTO `complaint` VALUES (1,'Aarti','bau vaydi thay chhe','reolved','string',1,1);
-/*!40000 ALTER TABLE `complaint` ENABLE KEYS */;
+LOCK TABLES `notification` WRITE;
+/*!40000 ALTER TABLE `notification` DISABLE KEYS */;
+INSERT INTO `notification` VALUES (2,'ishika','dimple','hello','2024-02-15 00:00:00'),(3,'dimple','yash','encryption','2024-02-15 06:57:55'),(4,'string','string','string','2024-03-04 06:00:48');
+/*!40000 ALTER TABLE `notification` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:23
+-- Dump completed on 2024-03-12 16:10:15

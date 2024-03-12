@@ -33,98 +33,13 @@
 
     <!-- Main CSS-->
     <link href="../css/theme.css" rel="stylesheet" media="all">
-    <!-- Include external HTML files using JavaScript -->
     <script>
-        // Fetch and include sidebar content
-        fetch('../includes/sidebarAdmin.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data);
-
-        // Fetch and include header content
-        fetch('../includes/header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    var menu = $('.js-item-menu');
-                    var sub_menu_is_showed = -1;
-
-                    for (var i = 0; i < menu.length; i++) {
-                        $(menu[i]).on('click', function (e) {
-                            e.preventDefault();
-                            $('.js-right-sidebar').removeClass("show-sidebar");
-                            if (jQuery.inArray(this, menu) == sub_menu_is_showed) {
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = -1;
-                            }
-                            else {
-                                for (var i = 0; i < menu.length; i++) {
-                                    $(menu[i]).removeClass("show-dropdown");
-                                }
-                                $(this).toggleClass('show-dropdown');
-                                sub_menu_is_showed = jQuery.inArray(this, menu);
-                            }
-                        });
-                    }
-                    $(".js-item-menu, .js-dropdown").click(function (event) {
-                        event.stopPropagation();
-                    });
-
-                    var userDataString = sessionStorage.getItem('user');
-
-
-                    // Step 2: Parse the JSON string to get the user data as an object
-                    var userData = userDataString ? JSON.parse(userDataString) : null;
-
-                    // Step 3: Update the content of the header dynamically if userData is not null
-                    if (userData) {
-
-                        document.getElementById('adminNameLink').textContent = userData.username;
-                        document.getElementById('adminNameDropdown').textContent = userData.username;
-                    } else {
-                        console.error('User data is missing or invalid.');
-                    }
-                });
-
-        // Function to handle the form submission
-        function handleFormSubmission(event) {
-                event.preventDefault();
-
-                // Get form data
-                const formData = new FormData(event.target);
-
-                // Convert FormData to a plain JavaScript object
-                const plainFormData = {};
-                formData.forEach((value, name) => {
-                    plainFormData[name] = value;
-                });
-
-                // Convert the data to JSON
-                const jsonData = JSON.stringify(plainFormData);
-
-                // Make an AJAX call to your API endpoint for creating a meeting
-                fetch('http://localhost:62416/api/Admin/CreateMeeting', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json', // Set the content type to JSON
-                    },
-                    body: jsonData,
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Handle the response from the server (if needed)
-                       alert('Meeting created successfully:', data);
-                       window.location.href = 'meeting.html';
-                        // You can perform additional actions based on the response
-                    })
-                    .catch(error => alert('Error creating meeting:', error));
-            }
-        </script>
+        if (!sessionStorage.getItem('user')) {
+            window.location.href = '../index.html';
+        }
     </script>
+    <!-- Include external HTML files using JavaScript -->
+
 </head>
 
 <body class="animsition">
@@ -154,7 +69,7 @@
                                         <strong>Add</strong> New Meeting
                                     </div>
                                     <div class="card-body card-block">
-                                        <form onsubmit="handleFormSubmission(event)" class="form-horizontal">
+                                        <form method="post" id="meetingForm" class="form-horizontal">
                                             <div class="row form-group">
                                                 <div class="col col-md-3">
                                                     <label for="title" class="form-control-label">Title</label>
@@ -190,8 +105,8 @@
 
                                             <div class="card-footer">
                                                 <p style="text-align: center;">
-                                                    <button type="submit" name="submit" id="submit"
-                                                        class="btn btn-primary btn-sm">Add</button>
+                                                    <input type="submit" name="submit" id="submit"
+                                                        class="btn btn-primary btn-sm"/>
                                                     <button type="reset" class="btn btn-danger btn-sm">Reset</button>
                                                 </p>
                                             </div>
@@ -206,9 +121,12 @@
             </div>
         </div>
     </div>
+    <!-- jQuery Validation and Additional Methods -->
+    <script src="../vendor/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
 
     <!-- Jquery JS-->
-    <script src="../vendor/jquery-3.2.1.min.js"></script>
     <!-- Bootstrap JS-->
     <script src="../vendor/bootstrap-4.1/popper.min.js"></script>
     <script src="../vendor/bootstrap-4.1/bootstrap.min.js"></script>
@@ -224,8 +142,12 @@
     <script src="../vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../vendor/select2/select2.min.js"></script>
 
+
+
+
     <!-- Main JS-->
     <script src="../js/main.js"></script>
+    <script src="js/addmeeting.js"></script>
 
 </body>
 

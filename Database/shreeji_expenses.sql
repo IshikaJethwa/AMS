@@ -28,7 +28,7 @@ CREATE TABLE `expenses` (
   `Amount` double NOT NULL,
   `DateTime` datetime NOT NULL,
   PRIMARY KEY (`ExpensesID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `expenses` (
 
 LOCK TABLES `expenses` WRITE;
 /*!40000 ALTER TABLE `expenses` DISABLE KEYS */;
-INSERT INTO `expenses` VALUES (1,'string',5000,'2024-02-15 06:57:55'),(2,'kharcho',500,'2024-02-15 10:41:52');
+INSERT INTO `expenses` VALUES (1,'aarti ma kharcho',5000,'2024-02-29 07:26:43'),(2,'kharcho',500,'2024-02-15 10:41:52'),(3,'pipeline',50,'2024-02-29 16:47:00'),(9,'repairing',3000,'2024-03-01 10:45:00'),(10,'repair ',5000,'2024-03-13 14:52:00');
 /*!40000 ALTER TABLE `expenses` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-16 15:13:23
+-- Dump completed on 2024-03-12 16:10:15
